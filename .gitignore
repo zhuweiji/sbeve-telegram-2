@@ -1,0 +1,8 @@
+**/__pycache__/**
+**/pytest_cache/**
+**/secrets/**
+**/.vscode/**
+
+
+**/.env
+**/scratch.py
