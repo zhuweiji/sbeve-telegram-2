@@ -1,6 +1,5 @@
 import io
 import logging
-import traceback
 from typing import Union
 from fastapi import Path
 
@@ -30,8 +29,7 @@ def send_message(text: str, chat_id) -> bool:
     if response.status_code == 200:
         return True
     else:
-        traceback.print_exc()
-        log.error(response.content)
+        log.exception(response.content)
         return False
 
 
@@ -59,8 +57,7 @@ def send_file(file: Union[bytes, Path], new_filename, chat_id) -> bool:
         return True
     
     else:
-        traceback.print_exc()
-        log.error(docresponse.content)
+        log.exception(docresponse.content)
         return False
     
 
@@ -79,6 +76,5 @@ def answer_inline_query(inline_query_id: str, results: list[InlineQueryResultArt
         return True
 
     else:
-        traceback.print_exc()
-        log.error(response.content)
+        log.exception(response.content)
         return False

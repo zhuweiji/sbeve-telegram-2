@@ -15,7 +15,7 @@ def parse_create_event(message:str):
     except EventCreationError as ECE:
         return ECE
     except Exception as E:
-        log.error(E)
+        log.exception(E)
         return EventCreationError(errors=str(E))
     
     

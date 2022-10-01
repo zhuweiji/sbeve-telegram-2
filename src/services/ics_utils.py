@@ -16,7 +16,7 @@ def create_ics_data(name: str='', start:str='', end:str='', calendar_event:Calen
         else:
             event = CalendarEvent(name=name, start=start, end=end)
     except EventCreationError as E:
-        log.error(E)
+        log.exception(E)
         return False
     
     object = event.to_ics()

@@ -1,5 +1,4 @@
 import logging
-import traceback
 from typing import Any, Dict, List, Union
 
 from fastapi import APIRouter
@@ -54,6 +53,5 @@ def handle(request: Union[List, Dict, Any] = None):
         return RESPONSE_OK()
     
     except Exception as E:
-        log.error(E)
-        traceback.print_exc()
+        log.exception(E)
         return RESPONSE_OK()

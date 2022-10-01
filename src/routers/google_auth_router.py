@@ -39,7 +39,7 @@ def oauth2callback(code: str, scope: str, state: str, request: Request):
         flow.fetch_token(authorization_response=authorization_response)
         credentials = flow.credentials
     except Exception as E:
-        log.error(E)
+        log.exception(E)
         return RESPONSE_SERVER_ERROR('Could not fetch credentials')
 
     log.info(credentials)

@@ -93,7 +93,7 @@ class TelegramMessage:
                 self.sender_first_name = self.sender_obj.get("first_name", None)
                 self.sender_username = self.sender_obj.get('username', None)
         except Exception as E:
-            log.error(E)
+            log.exception(E)
 
     def get_user_identifier(self):
         return self.sender_first_name or self.sender_username or 'user'

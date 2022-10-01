@@ -32,7 +32,7 @@ def save_credentials(key, credentials: Credentials):
 
         return True
     except Exception as E:
-        log.error(f'Exception encountered while saving credentials:\n{E}')
+        log.exception(f'Exception encountered while saving credentials:\n{E}')
         return False
 
 
@@ -62,7 +62,7 @@ def read_credentials(user_id):
         log.info(f'credentials: {creds}')
     except Exception as E:
         log.info('could not create credentials')
-        log.error(E)
+        log.exception(E)
         return False
 
     if not creds:
