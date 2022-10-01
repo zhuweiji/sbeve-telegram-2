@@ -19,6 +19,9 @@ google-auth-oauthlib = "^0.5.3"
 
 [tool.poetry.dev-dependencies]
 
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^1.7.0"
+
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "INFO"

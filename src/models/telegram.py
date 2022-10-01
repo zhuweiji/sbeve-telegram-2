@@ -11,11 +11,23 @@ log = logging.getLogger(__name__)
 @dataclass
 class InlineQuery:
     id:str
-    _from: dict
+    _from: dict 
     query: str
     offset: str
     chat_type: str = None
     location: Any = None
+    
+    @classmethod
+    def from_dict(cls, obj: dict):
+        if not obj: return False
+        try:
+            obj['_from'] = obj['from']
+            del obj['from']
+            return InlineQuery(**obj)
+        except Exception as E:
+            log.exception(E)
+            return False
+        
 
 
 @dataclass
@@ -31,19 +43,24 @@ class InlineQueryResult(ABC):
 
 @dataclass
 class InlineQueryResultArticle(InlineQueryResult):
+    input_message_content:InputTextMessageContent
     id: str
     title: str
-    input_message_content:InputTextMessageContent
-    reply_markup: InlineKeyboardMarkup = None
+    # reply_markup: InlineKeyboardMarkup = None
     url: str = ''
-    hide_url: bool = False
+    # hide_url: bool = False
     description: str = ''
-    thumb_url: str = ''
-    thumb_width: int = None
-    thumb_height: int = None
+    # thumb_url: str = ''
+    # thumb_width: int = None
+    # thumb_height: int = None
     type: str = 'article'
     
-
+@dataclass
+class InlineQueryResultDocument(InlineQueryResult):
+    id: str
+    title: str
+    caption:str = ''
+    type: str = 'document'
     
 
 @dataclass

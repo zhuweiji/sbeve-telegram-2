@@ -31,10 +31,10 @@ def handle(request: Union[List, Dict, Any] = None):
         request_object = TelegramMessage(request)
         user_id = request_object.user_id
         message = request_object.message
-        inline_query = request_object.inline_query
         
-        if inline_query:
-            pass
+        if inline_query := InlineQuery.from_dict(request_object.inline_query):
+            create_event_inline_handler(inline_query, data={})
+            log.info(inline_query)
         
         elif handler_obj := check_for_handler(userid=user_id, message=message):
             handler_obj.handle(message)

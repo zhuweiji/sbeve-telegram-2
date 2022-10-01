@@ -26,13 +26,21 @@ class CalendarTime:
     timezone_offset = '+0800'
     
     def __init__(self, datetime) -> None:
+        if isinstance(datetime, str):
+            datetime = self.add_colon_to_time(datetime)
+            
         self.dateTime = self.parse_datetime_to_iso(datetime)
 
     def __bool__(self): return bool(self.dateTime)
     
+    def __str__(self) -> str:
+        return self.dateTime.strftime("%a, %m/%d %I:%M %p")
+    
     @classmethod
-    def parse_datetime_to_iso(cls, datetime):
-        return dateparser.parse(f'{datetime} {cls.timezone_offset}')
+    def parse_datetime_to_iso(cls, datetime_str):
+        return dateparser.parse(
+            f'{datetime_str} {cls.timezone_offset}', settings={'DATE_ORDER': 'DMY', 'RELATIVE_BASE': datetime.now()}
+        )
     
     @classmethod
     def add_colon_to_time(cls, datetime):
@@ -105,6 +113,9 @@ class CalendarEvent:
         c.events.add(e)
         
         return c.serialize()
+    
+    def __str__(self) -> str:
+        return f"Event: {self.name}\nFrom: {self.start} | Till: {self.end}"
         
     
 class EventCreationError(Exception): 

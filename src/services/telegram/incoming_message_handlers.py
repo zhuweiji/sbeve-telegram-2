@@ -1,14 +1,19 @@
-from dataclasses import dataclass, field
-from typing import Callable
+from dataclasses import asdict, dataclass, field
+import json
+from typing import Callable, List
+import uuid
 from src.models.events import CalendarEvent, EventCreationError
+from src.models.telegram import InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 from src.routers.responses import *
 from src.services.google_auth import generate_auth_url, read_credentials
 from src.services.google_events import GoogleCalendarEvent
 from src.services.ics_utils import create_ics_data
 
 from src.services.telegram.incoming_message_parsers import parse_create_event
-from src.services.telegram.send_functions import send_file, send_message
+from src.services.telegram.send_functions import answer_inline_query, send_file, send_message
 from googleapiclient.errors import HttpError
+
+from src.services.utilities import WEBHOOK_URL
 
 
 handler_map = {}
@@ -112,3 +117,96 @@ def what_to_do_with_event_handler(message:str, userid:str, data):
         return True
     
     return False
+
+def inline_query_handler(query_obj: InlineQuery,  data=None):
+    raise NotImplementedError
+
+    # example code for an inline query handler
+    
+    message, query_id = query_obj.query, query_obj.id
+    query_responses: List[InlineQueryResultArticle] = []
+    
+    message_content = InputTextMessageContent(
+        message_text='hello world!',
+    )
+    
+    response = InlineQueryResultArticle(
+        id=uuid.uuid4().urn,
+        title='my response',
+        input_message_content=message_content,
+    )
+    
+    d = asdict(response)
+    
+    query_responses.append(d)
+    j = json.dumps(query_responses)
+    log.warning(j)
+    
+    answer_inline_query(inline_query_id=query_id, results=j)
+    return True
+
+
+def create_event_inline_handler(query_obj: InlineQuery,  data=None):
+    message, query_id = query_obj.query, query_obj.id
+    query_responses: List[InlineQueryResultArticle] = []
+    
+    message_content = InputTextMessageContent(
+        message_text='Incomplete Event',
+    )
+    
+    response = InlineQueryResultArticle(
+        id=uuid.uuid4().urn,
+        title='Incomplete Event',
+        input_message_content=message_content,
+        description=''
+    )
+    
+    
+    message_components = message.splitlines()
+    if not message.strip() or len(message_components) == 1:
+        response.description = "Currently entering: Event Name\nPress enter to move on to the Event's start date"
+    elif len(message_components) == 2 or message[-1] == ' ':
+        response.description = "Currently entering: Event Start Date\nPress enter to move on to the Event's end date"
+    elif len(message_components) == 3:
+        
+        message_content = InputTextMessageContent(
+            message_text='Your event',
+        )
+        
+        event = parse_create_event(message)
+        # check end time?
+        if isinstance(event, EventCreationError):
+            response.description = str(event.errors)
+        else:
+            message_content.message_text = str(event)
+            
+            response = InlineQueryResultArticle(
+                id=uuid.uuid4().urn,
+                title='Completed Event',
+                input_message_content=message_content,
+                description='',
+                url=f'{WEBHOOK_URL}'
+            )
+        
+            response.description = "Currently entering: Event End Date\nClick this button to send the Event on this chat!"
+
+    
+    d = asdict(response)
+    query_responses.append(d)
+    log.warning(d)
+    
+    j = json.dumps(query_responses)
+    answer_inline_query(inline_query_id=query_id, results=j)
+
+
+
+def create_event_inline_handler__eventname():
+    pass
+
+
+def create_event_inline_handler__startdt():
+    pass
+
+
+def create_event_inline_handler__enddt():
+    pass
