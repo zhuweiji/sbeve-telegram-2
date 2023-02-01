@@ -27,4 +27,4 @@ COPY . /app
 
 HEALTHCHECK CMD poetry run healthcheck
 
-ENTRYPOINT poetry run py main.py
+ENTRYPOINT poetry run python main.py
